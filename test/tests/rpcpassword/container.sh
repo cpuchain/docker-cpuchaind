@@ -2,14 +2,14 @@
 set -e
 
 # Generate the password the first time
-btc_init 2>/dev/null
-eval `grep rpcpassword $HOME/.bitcoin/bitcoin.conf`
+cpu_init 2>/dev/null
+eval `grep rpcpassword $HOME/.cpuchain/cpuchain.conf`
 rpcpassword1=$rpcpassword
 
 # Generate the password again
-rm ~/.bitcoin/bitcoin.conf
-btc_init 2>/dev/null
-eval `grep rpcpassword $HOME/.bitcoin/bitcoin.conf`
+rm ~/.cpuchain/cpuchain.conf
+cpu_init 2>/dev/null
+eval `grep rpcpassword $HOME/.cpuchain/cpuchain.conf`
 rpcpassword2=$rpcpassword
 
 

@@ -1,25 +1,18 @@
 FROM ubuntu:xenial
-MAINTAINER Kyle Manna <kyle@kylemanna.com>
+MAINTAINER Min Khang Aung <info@cpuchain.org>
 
 ARG USER_ID
 ARG GROUP_ID
 
-ENV HOME /bitcoin
+ENV HOME /cpuchain
 
 # add user with specified (or default) user/group ids
 ENV USER_ID ${USER_ID:-1000}
 ENV GROUP_ID ${GROUP_ID:-1000}
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN groupadd -g ${GROUP_ID} bitcoin \
-	&& useradd -u ${USER_ID} -g bitcoin -s /bin/bash -m -d /bitcoin bitcoin
-
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C70EF1F0305A1ADB9986DBD8D46F45428842CE5E && \
-    echo "deb http://ppa.launchpad.net/bitcoin/bitcoin/ubuntu xenial main" > /etc/apt/sources.list.d/bitcoin.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		bitcoind \
-	&& apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN groupadd -g ${GROUP_ID} cpuchain \
+	&& useradd -u ${USER_ID} -g cpuchain -s /bin/bash -m -d /cpuchain cpuchain
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
@@ -27,6 +20,7 @@ RUN set -x \
 	&& apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates \
 		wget \
+		tar \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -35,6 +29,10 @@ RUN set -x \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
+	&& wget https://github.com/cpuchain/cpuchain/releases/download/v0.16.3/cpuchain-0.16.3-x86_64-linux-gnu.tar.gz \
+	&& tar xvf cpuchain-0.16.3-x86_64-linux-gnu.tar.gz \
+	&& install -m 0755 -o root -g root -t /usr/bin cpuchain-0.16.3/bin/* \
+	&& rm -r cpuchain-0.16.3-x86_64-linux-gnu.tar.gz cpuchain-0.16.3 \
 	&& apt-get purge -y \
 		ca-certificates \
 		wget \
@@ -42,13 +40,13 @@ RUN set -x \
 
 ADD ./bin /usr/local/bin
 
-VOLUME ["/bitcoin"]
+VOLUME ["/cpuchain"]
 
-EXPOSE 8332 8333 18332 18333
+EXPOSE 19707 19706
 
-WORKDIR /bitcoin
+WORKDIR /cpuchain
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["btc_oneshot"]
+CMD ["cpu_oneshot"]

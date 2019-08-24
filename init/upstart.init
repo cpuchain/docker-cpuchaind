@@ -1,15 +1,15 @@
-# Copy to /etc/init/docker-bitcoind.conf
-description "Docker container for bitcoind p2p node"
+# Copy to /etc/init/docker-cpuchaind.conf
+description "Docker container for cpuchaind p2p node"
 start on filesystem and started docker
 stop on runlevel [!2345]
 respawn
 pre-start script
   # Clean-up if left behind
-  docker rm -f bitcoind-node || true
+  docker rm -f cpuchaind-node || true
   
   # Attempt to always update and fail silently if the network isn't ready
-  docker pull kylemanna/bitcoind || true
+  docker pull cpuchain/cpuchaind || true
 end script
 script
-  exec docker run --rm -v bitcoind-data:/bitcoin --name=bitcoind-node --rm -p 8333:8333 -p 127.0.0.1:8332:8332 kylemanna/bitcoind
+  exec docker run --rm -v cpuchaind-data:/cpuchain --name=cpuchaind-node --rm -p 19706:19706 -p 127.0.0.1:19707:19707 cpuchain/cpuchaind
 end script

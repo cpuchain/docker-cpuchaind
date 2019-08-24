@@ -4,18 +4,18 @@ set -ex
 
 # This shouldn't be in the Dockerfile or containers built from the same image
 # will have the same credentials.
-if [ ! -e "$HOME/.bitcoin/bitcoin.conf" ]; then
-    mkdir -p $HOME/.bitcoin
+if [ ! -e "$HOME/.cpuchain/cpuchain.conf" ]; then
+    mkdir -p $HOME/.cpuchain
 
-    echo "Creating bitcoin.conf"
+    echo "Creating cpuchain.conf"
 
     # Seed a random password for JSON RPC server
-    cat <<EOF > $HOME/.bitcoin/bitcoin.conf
+    cat <<EOF > $HOME/.cpuchain/cpuchain.conf
 printtoconsole=${PRINTTOCONSOLE:-1}
 EOF
 
 fi
 
-cat $HOME/.bitcoin/bitcoin.conf
+cat $HOME/.cpuchain/cpuchain.conf
 
 echo "Initialization completed successfully"
